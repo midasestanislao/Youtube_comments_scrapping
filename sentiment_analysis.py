@@ -1,4 +1,5 @@
 import time
+import csv
 import pandas as pd
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
@@ -15,6 +16,12 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import re
+
+# Guardar en CSV
+with open("/mnt/c/Users/leoni/Desktop/Proyecto_webScrapping_twitter/tweets.csv", "w", newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Tweet_count", "Username", "Text", "Created At", "Retweets", "Likes"])
+
 
 def process_youtube_comments(youtube_video_url, category):
     data = []
@@ -114,7 +121,7 @@ def process_youtube_comments(youtube_video_url, category):
     return filtered_df
 
 # Uso de la función
-youtube_video_url = "https://www.youtube.com/watch?v=GwgNS23SiXM"
-category = ['emperor', 'love', 'best']
+youtube_video_url = "https://www.youtube.com/watch?v=hmL8al8twIE"
+category = ['trump', 'kamala', 'president', 'united states', 'elections', 'usa', 'winner', 'loser']
 filtered_df = process_youtube_comments(youtube_video_url, category)
 print(filtered_df)

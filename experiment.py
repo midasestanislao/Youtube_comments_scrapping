@@ -1,4 +1,5 @@
 import time
+import csv
 import pandas as pd
 from selenium.webdriver import Chrome
 import chromedriver_autoinstaller
@@ -19,6 +20,12 @@ import re
 import nltk
 nltk.downloader.download('vader_lexicon')
 
+# Guardar en CSV
+with open("/mnt/c/Users/leoni/Desktop/Proyecto_webScrapping_twitter/tweets.csv", "w", newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Tweet_count", "Username", "Text", "Created At", "Retweets", "Likes"])
+
+
 def process_youtube_comments(youtube_video_url, category):
     data = []
     user = []
@@ -26,7 +33,7 @@ def process_youtube_comments(youtube_video_url, category):
 
     chromedriver_autoinstaller.install()
     with Chrome() as driver:
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 20)
         driver.get(youtube_video_url)
 
         for item in range(4):  # By increasing the highest range you can get more content
@@ -110,17 +117,32 @@ def process_youtube_comments(youtube_video_url, category):
             sentiments.append('Neutral')
 
     combined_df["Sentiment"] = sentiments
-
+    
+    #Filtrado por categoria
     filtered_df = combined_df[combined_df["comment"].str.contains("|".join(category))]
+    
+    
     Pos_filtered_df = combined_df[combined_df['Sentiment'] == 'Positive']
-    Neg_filtered_df = combined_df[combined_df['Sentiment'] == 'Negative']
+    # Neg_filtered_df = combined_df[combined_df['Sentiment'] == 'Negative']
     Pos_filtered_df = Pos_filtered_df.drop(columns=["Positive", "Negative", "Neutral", "Compound"])
-    Neg_filtered_df = Neg_filtered_df.drop(columns=["Positive", "Negative", "Neutral", "Compound"])
+    # Neg_filtered_df = Neg_filtered_df.drop(columns=["Positive", "Negative", "Neutral", "Compound"])
+
+    # Seleccion del tipo de comentario
+    filtered_df = Pos_filtered_df
+    filtered_df.to_csv('/mnt/c/Users/leoni/Desktop/Proyecto_webScrapping_youtube/comments.csv', index=False)
 
     return filtered_df
 
 # Uso de la función
-youtube_video_url = "https://www.youtube.com/watch?v=2QwUM-MweIQ"
-category = ['trump', 'kamala', 'president', 'united states', 'elections']
+# Liga del video
+youtube_video_url = "https://www.youtube.com/watch?v=hmL8al8twIE"
+
+# Palabras para buscar
+# category = ['trump', 'kamala', 'president', 'united states', 'elections', 'usa', 'winner', 'loser']
+category = ['kamala', 'president', 'united states', 'elections', 'usa', 'winner', 'woman']
+# Se puede priorizar los comentarios con la variable de categoria
+
+# Proceso de filtraccion
 filtered_df = process_youtube_comments(youtube_video_url, category)
+
 print(filtered_df)
